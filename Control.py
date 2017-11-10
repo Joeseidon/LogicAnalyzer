@@ -26,9 +26,6 @@ import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui
 import piplates.DAQC2plate as DAQC2
 from Probe import *
-
-'''#Single timer + multithread plotting attempt
-from threading import Thread as thread'''
  
 class Control(pg.LayoutWidget):
 	supportedProtocols = ['I2C','SPI']
@@ -39,8 +36,6 @@ class Control(pg.LayoutWidget):
 		super(Control,self).__init__()
 		self.createObjects()
 		self.probes = self.createProbes()
-		
-		#self.creatTimer()
 		
 	def createObjects(self):
 		self.label = QtGui.QLabel("""-- Logic Analyzer --""")
@@ -85,19 +80,6 @@ class Control(pg.LayoutWidget):
 				else:
 					probe.setEnabled(True)
 				i+=1
-	'''
-	#Single timer + multithread plotting attempt
-	def creatTimer(self):
-		self.timer = QtCore.QTimer()
-		self.timer.timeout.connect(self.Updater)
-	
-	def Updater(self):
-		#Pull data from piplate for all din 
-		DINreg = DAQC2.getDINall(0)
-		#Pass pass full reg to each probe 
-		for probe in self.probes:
-			thread.start_new_thread(probe.probeUpdater, (DINreg))
-		#each probe with then process the register per their pin and plot'''
 		
 	def startRecording(self):
 		#Enable stop button

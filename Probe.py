@@ -26,9 +26,6 @@ import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui
 import piplates.DAQC2plate as DAQC2
 
-#For thread test
-#from probeThread import *
-
 class Probe(pg.PlotWidget):
 	def __init__(self, name, title, pin,enabled=True):
 		super(Probe,self).__init__(name=name, title=title, labels = {'left':'Logic Level','bottom':'Time'})
@@ -39,12 +36,7 @@ class Probe(pg.PlotWidget):
 		self.record = False
 		self.enabled = enabled
 		self.pdata = [1]
-		self.pin = pin		
-		
-		#testing threading
-		'''self.dataThread = ProbeThread(self.pin)
-		self.dataThread.newData.connect(self.probeUpdater)'''
-		
+		self.pin = pin				
 
 	def createCurve(self, enableShadow=False, enableRec=False):
 		self.pcurve = self.getPlotItem().plot()
@@ -65,34 +57,18 @@ class Probe(pg.PlotWidget):
 		self.timer.timeout.connect(self.probeUpdater)
 		
 	def probeUpdater(self):
-		if self.record and self.enabled:
-			#piplate holds all pins high
-				#pinReading = (0 if DAQC2.getDINbit(0,self.pin) else 1)
-			
+		if self.record and self.enabled:			
 			pinReading = DAQC2.getDINbit(0,self.pin)
-			
-			
 			self.pdata.append(pinReading)
 			self.pcurve.setData(self.pdata)
-			
-		#Testing threading (requires data to be added to func parameters)
-		'''if self.record and self.enabled:
-			self.pdata.append(data)
-			self.pcurve.setData(self.pdata)'''
 			
 	def startRecording(self):
 		self.timer.start(1)
 		self.record = True 
-		
-		#For thread test
-		#self.dataThread.start()
 	
 	def stopRecording(self):
 		self.timer.stop()
 		self.record = False
-		
-		#For thread test
-		#self.dataThread.stop()
 		
 	def recording(self):
 		return self.record
